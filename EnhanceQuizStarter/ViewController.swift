@@ -14,29 +14,36 @@ class ViewController: UIViewController {
     
     // MARK: - Properties
     
-    let questionsPerRound = 4
+    let questionsPerRound = questionLists.count
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion = 0
-    
     var gameSound: SystemSoundID = 0
-    
-    let trivia: [[String : String]] = [
-        ["Question": "Only female koalas can whistle", "Answer": "False"],
-        ["Question": "Blue whales are technically whales", "Answer": "True"],
-        ["Question": "Camels are cannibalistic", "Answer": "False"],
-        ["Question": "All ducks are birds", "Answer": "True"]
-    ]
+    var usedIndex: [Int] = []
+
     
     // MARK: - Outlets
     
     @IBOutlet weak var questionField: UILabel!
-    @IBOutlet weak var trueButton: UIButton!
-    @IBOutlet weak var falseButton: UIButton!
+    @IBOutlet weak var option1Button: UIButton!
+    @IBOutlet weak var option2Button: UIButton!
+    @IBOutlet weak var option3Button: UIButton!
+    @IBOutlet weak var option4Button: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
-
+    @IBOutlet weak var checkingAnswerLable: UILabel!
+    @IBOutlet weak var nextQuestionButton: UIButton!
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        option1Button.layer.cornerRadius = 5
+        option2Button.layer.cornerRadius = 5
+        option3Button.layer.cornerRadius = 5
+        option4Button.layer.cornerRadius = 5
+        playAgainButton.layer.cornerRadius = 5
+        nextQuestionButton.layer.cornerRadius = 5
         
         loadGameStartSound()
         playGameStartSound()
@@ -55,33 +62,111 @@ class ViewController: UIViewController {
         AudioServicesPlaySystemSound(gameSound)
     }
     
+    // Hiding and showing Options Buttons
+    func hideOptionsButtons(status: Bool) {
+        
+        if status == true {
+            option1Button.isHidden = true
+            option2Button.isHidden = true
+            option3Button.isHidden = true
+            option4Button.isHidden = true
+        } else if status == false {
+            option1Button.isHidden = false
+            option2Button.isHidden = false
+            option3Button.isHidden = false
+            option4Button.isHidden = false
+        }
+    }
+    
+ 
     func displayQuestion() {
-        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: trivia.count)
-        let questionDictionary = trivia[indexOfSelectedQuestion]
-        questionField.text = questionDictionary["Question"]
+        
+        // random number generator
+        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: questionLists.count)
+        let questionDictionary = questionLists[indexOfSelectedQuestion]
+        
+        // the Question of the round
+        questionField.text = questionDictionary.question
+
+       
+        
+        // display 2 o 4 choices depnds the questions
+        
+        if questionDictionary.choices.count == 2  {
+        option3Button.isHidden = true
+        option4Button.isHidden = true
         playAgainButton.isHidden = true
+        checkingAnswerLable.isHidden = true
+        nextQuestionButton.isHidden = true
+        option1Button.setTitle(questionDictionary.choices[0], for: .normal)
+        option2Button.setTitle(questionDictionary.choices[1], for: .normal)
+            option1Button.alpha = 1.0
+            option2Button.alpha = 1.0
+        
+            // Enable the BUTTON
+            option1Button.isEnabled = true
+            option2Button.isEnabled = true
+            
+        } else {
+        playAgainButton.isHidden = true
+        option3Button.isHidden = false
+        option4Button.isHidden = false
+        checkingAnswerLable.isHidden = true
+        nextQuestionButton.isHidden = true
+        option1Button.setTitle(questionDictionary.choices[0], for: .normal)
+        option2Button.setTitle(questionDictionary.choices[1], for: .normal)
+        option3Button.setTitle(questionDictionary.choices[2], for: .normal)
+        option4Button.setTitle(questionDictionary.choices[3], for: .normal)
+        
+        option1Button.alpha = 1.0
+        option2Button.alpha = 1.0
+        option3Button.alpha = 1.0
+        option4Button.alpha = 1.0
+        
+        // Enable the BUTTONS
+            option1Button.isEnabled = true
+            option2Button.isEnabled = true
+            option3Button.isEnabled = true
+            option4Button.isEnabled = true
+            
+            
+        }
+       
+        
     }
     
     func displayScore() {
-        // Hide the answer uttons
-        trueButton.isHidden = true
-        falseButton.isHidden = true
+        
+        hideOptionsButtons(status: true)
+        checkingAnswerLable.isHidden = true
         
         // Display play again button
         playAgainButton.isHidden = false
         
+        // display the final result
+        if correctQuestions == questionsPerRound {
+            questionField.text = "Congrats!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
+        } else {
         questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
+        }
     }
     
     func nextRound() {
-        if questionsAsked == questionsPerRound {
-            // Game is over
-            displayScore()
-        } else {
-            // Continue game
-            displayQuestion()
+        
+            if questionsAsked == questionsPerRound {
+                // Game is over
+                displayScore()
+                // dissapear the next question's BUTTON
+                nextQuestionButton.isHidden = true
+                
+            } else {
+                
+            // go to the next Question
+                displayQuestion()
+            }
         }
-    }
+     
+    
     
     func loadNextRound(delay seconds: Int) {
         // Converts a delay in seconds to nanoseconds as signed 64 bit integer
@@ -101,30 +186,74 @@ class ViewController: UIViewController {
         // Increment the questions asked counter
         questionsAsked += 1
         
-        let selectedQuestionDict = trivia[indexOfSelectedQuestion]
-        let correctAnswer = selectedQuestionDict["Answer"]
+        let selectedQuestionDict = questionLists[indexOfSelectedQuestion]
+        let correctAnswer = selectedQuestionDict.answer
         
-        if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
+        
+        if (sender === option1Button &&  correctAnswer == 0) || (sender === option2Button && correctAnswer == 1) || (sender === option3Button && correctAnswer == 2) || (sender === option4Button && correctAnswer == 3) {
             correctQuestions += 1
-            questionField.text = "Correct!"
+            
+            // display the Answer result if correct
+            checkingAnswerLable.isHidden = false
+            checkingAnswerLable.text = "Correct!"
+            checkingAnswerLable.textColor = #colorLiteral(red: 0, green: 0.5764705882, blue: 0.5294117647, alpha: 1)
+            
+            //
+            option1Button.alpha = 0.50
+            option2Button.alpha = 0.50
+            option3Button.alpha = 0.50
+            option4Button.alpha = 0.50
+            
+            // disable the BUTTONS
+            option1Button.isEnabled = false
+            option2Button.isEnabled = false
+            option3Button.isEnabled = false
+            option4Button.isEnabled = false
+            
         } else {
-            questionField.text = "Sorry, wrong answer!"
+            
+            // display the Answer result if NOT correct
+            checkingAnswerLable.isHidden = false
+            checkingAnswerLable.text = "Sorry, wrong answer!"
+            checkingAnswerLable.textColor = #colorLiteral(red: 1, green: 0.6366160512, blue: 0.3839452267, alpha: 1)
+            option1Button.alpha = 0.50
+            option2Button.alpha = 0.50
+            option3Button.alpha = 0.50
+            option4Button.alpha = 0.50
+            
+            // disable Options BUTTONS
+            option1Button.isEnabled = false
+            option2Button.isEnabled = false
+            option3Button.isEnabled = false
+            option4Button.isEnabled = false
+    
         }
         
-        loadNextRound(delay: 2)
+        // display the Next Question's BUTTON for the nextRound
+        nextQuestionButton.isHidden = false
+        
+  
     }
     
+    // Action of the Next Question's BUTTON
+    @IBAction func goToNextQuestion(_ sender: UIButton) {
+        loadNextRound(delay: 0)
+    }
     
+    // Action of the play again's BUTTON
     @IBAction func playAgain(_ sender: UIButton) {
-        // Show the answer buttons
-        trueButton.isHidden = false
-        falseButton.isHidden = false
         
+        // Show the Options buttons
+        hideOptionsButtons(status: false)
+        
+        // Rest Value
+        usedIndex = []
         questionsAsked = 0
         correctQuestions = 0
         nextRound()
     }
     
-
+  
 }
+
 
