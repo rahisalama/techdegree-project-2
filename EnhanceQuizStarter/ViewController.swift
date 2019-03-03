@@ -19,8 +19,9 @@ class ViewController: UIViewController {
     var correctQuestions = 0
     var indexOfSelectedQuestion = 0
     var gameSound: SystemSoundID = 0
-    var usedIndex: [Int] = []
-
+    var shuffledQuestions: [QuestionsData] = []
+   
+    
     
     // MARK: - Outlets
     
@@ -44,6 +45,7 @@ class ViewController: UIViewController {
         option4Button.layer.cornerRadius = 5
         playAgainButton.layer.cornerRadius = 5
         nextQuestionButton.layer.cornerRadius = 5
+        shuffledQuestions = questionLists.shuffled()
         
         loadGameStartSound()
         playGameStartSound()
@@ -78,15 +80,18 @@ class ViewController: UIViewController {
         }
     }
     
+    
+
  
     func displayQuestion() {
         
-        // random number generator
-        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: questionLists.count)
-        let questionDictionary = questionLists[indexOfSelectedQuestion]
+        // selecting a question form the suffled Array
+        let questionDictionary = shuffledQuestions[indexOfSelectedQuestion]
         
         // the Question of the round
         questionField.text = questionDictionary.question
+        
+        
 
        
         
@@ -137,10 +142,11 @@ class ViewController: UIViewController {
     
     func displayScore() {
         
+        // hiding all BUTTONS + Checking Answe Lable
         hideOptionsButtons(status: true)
         checkingAnswerLable.isHidden = true
         
-        // Display play again button
+        // Display PLAY AGAIN button
         playAgainButton.isHidden = false
         
         // display the final result
@@ -184,11 +190,12 @@ class ViewController: UIViewController {
     
     @IBAction func checkAnswer(_ sender: UIButton) {
         // Increment the questions asked counter
-        questionsAsked += 1
         
-        let selectedQuestionDict = questionLists[indexOfSelectedQuestion]
+        
+        let selectedQuestionDict = shuffledQuestions[indexOfSelectedQuestion]
         let correctAnswer = selectedQuestionDict.answer
-        
+        indexOfSelectedQuestion += 1
+        questionsAsked += 1
         
         if (sender === option1Button &&  correctAnswer == 0) || (sender === option2Button && correctAnswer == 1) || (sender === option3Button && correctAnswer == 2) || (sender === option4Button && correctAnswer == 3) {
             correctQuestions += 1
@@ -247,8 +254,9 @@ class ViewController: UIViewController {
         hideOptionsButtons(status: false)
         
         // Rest Value
-        usedIndex = []
+        shuffledQuestions = questionLists.shuffled()
         questionsAsked = 0
+        indexOfSelectedQuestion = 0
         correctQuestions = 0
         nextRound()
     }
