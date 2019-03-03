@@ -14,12 +14,12 @@ class ViewController: UIViewController {
     
     // MARK: - Properties
     
-    let questionsPerRound = questionLists.count
+    let questionsPerRound = questions.count
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion = 0
     var gameSound: SystemSoundID = 0
-    var shuffledQuestions: [QuestionsData] = []
+    var shuffledQuestions: [Question] = []
    
     
     
@@ -45,7 +45,7 @@ class ViewController: UIViewController {
         option4Button.layer.cornerRadius = 5
         playAgainButton.layer.cornerRadius = 5
         nextQuestionButton.layer.cornerRadius = 5
-        shuffledQuestions = questionLists.shuffled()
+        shuffledQuestions = questions.shuffled()
         
         loadGameStartSound()
         playGameStartSound()
@@ -254,7 +254,7 @@ class ViewController: UIViewController {
         hideOptionsButtons(status: false)
         
         // Rest Value
-        shuffledQuestions = questionLists.shuffled()
+        shuffledQuestions = questions.shuffled()
         questionsAsked = 0
         indexOfSelectedQuestion = 0
         correctQuestions = 0
