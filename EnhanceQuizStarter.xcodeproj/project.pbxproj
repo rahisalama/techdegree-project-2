@@ -13,7 +13,8 @@
 		972A72B82056F06C0059EF4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 972A72B72056F06C0059EF4A /* Assets.xcassets */; };
 		972A72BB2056F06C0059EF4A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 972A72B92056F06C0059EF4A /* LaunchScreen.storyboard */; };
 		972A72C32056F0E40059EF4A /* GameSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 972A72C22056F0E40059EF4A /* GameSound.wav */; };
-		BF614A4022195E5D00517960 /* QuestionsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF614A3F22195E5D00517960 /* QuestionsProvider.swift */; };
+		BF614A4022195E5D00517960 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF614A3F22195E5D00517960 /* GameManager.swift */; };
+		BFE02DD522357B1E00CF4E78 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE02DD422357B1E00CF4E78 /* SoundManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +26,8 @@
 		972A72BA2056F06C0059EF4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		972A72BC2056F06C0059EF4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		972A72C22056F0E40059EF4A /* GameSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = GameSound.wav; sourceTree = "<group>"; };
-		BF614A3F22195E5D00517960 /* QuestionsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionsProvider.swift; sourceTree = "<group>"; };
+		BF614A3F22195E5D00517960 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
+		BFE02DD422357B1E00CF4E78 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,11 +63,12 @@
 				972A72B02056F06C0059EF4A /* AppDelegate.swift */,
 				972A72B22056F06C0059EF4A /* ViewController.swift */,
 				972A72B42056F06C0059EF4A /* Main.storyboard */,
-				BF614A3F22195E5D00517960 /* QuestionsProvider.swift */,
+				BF614A3F22195E5D00517960 /* GameManager.swift */,
 				972A72B72056F06C0059EF4A /* Assets.xcassets */,
 				972A72B92056F06C0059EF4A /* LaunchScreen.storyboard */,
 				972A72BC2056F06C0059EF4A /* Info.plist */,
 				972A72C22056F0E40059EF4A /* GameSound.wav */,
+				BFE02DD422357B1E00CF4E78 /* SoundManager.swift */,
 			);
 			path = EnhanceQuizStarter;
 			sourceTree = "<group>";
@@ -145,7 +148,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				972A72B32056F06C0059EF4A /* ViewController.swift in Sources */,
-				BF614A4022195E5D00517960 /* QuestionsProvider.swift in Sources */,
+				BFE02DD522357B1E00CF4E78 /* SoundManager.swift in Sources */,
+				BF614A4022195E5D00517960 /* GameManager.swift in Sources */,
 				972A72B12056F06C0059EF4A /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

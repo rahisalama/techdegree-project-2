@@ -7,21 +7,10 @@
 //
 
 import UIKit
-import GameKit
-import AudioToolbox
+
+
 
 class ViewController: UIViewController {
-    
-    // MARK: - Properties
-    
-    let questionsPerRound = questions.count
-    var questionsAsked = 0
-    var correctQuestions = 0
-    var indexOfSelectedQuestion = 0
-    var gameSound: SystemSoundID = 0
-    var shuffledQuestions: [Question] = []
-   
-    
     
     // MARK: - Outlets
     
@@ -45,25 +34,17 @@ class ViewController: UIViewController {
         option4Button.layer.cornerRadius = 5
         playAgainButton.layer.cornerRadius = 5
         nextQuestionButton.layer.cornerRadius = 5
-        shuffledQuestions = questions.shuffled()
-        
-        loadGameStartSound()
-        playGameStartSound()
-        displayQuestion()
+    
+        gameManager.shuffleArray()
+        PlaySounds.loadGameStartSound()
+        PlaySounds.playGameStartSound()
+        nextRound()
     }
+    
+    
+    let gameManager = GameManager.init()
     
     // MARK: - Helpers
-    
-    func loadGameStartSound() {
-        let path = Bundle.main.path(forResource: "GameSound", ofType: "wav")
-        let soundUrl = URL(fileURLWithPath: path!)
-        AudioServicesCreateSystemSoundID(soundUrl as CFURL, &gameSound)
-    }
-    
-    func playGameStartSound() {
-        AudioServicesPlaySystemSound(gameSound)
-    }
-    
     // Hiding and showing Options Buttons
     func hideOptionsButtons(status: Bool) {
         
@@ -80,37 +61,52 @@ class ViewController: UIViewController {
         }
     }
     
+    func enableButtons(status: Bool) {
+        
+        if status == true {
+            option1Button.isEnabled = true
+            option2Button.isEnabled = true
+            option3Button.isEnabled = true
+            option4Button.isEnabled = true
+        } else if status == false {
+            option1Button.isEnabled = false
+            option2Button.isEnabled = false
+            option3Button.isEnabled = false
+            option4Button.isEnabled = false
+        }
+    }
     
-
+    func buttonsAlpha(degree: CGFloat) {
+        
+        option1Button.alpha = degree
+        option2Button.alpha = degree
+        option3Button.alpha = degree
+        option4Button.alpha = degree
+        
+    }
+    
  
     func displayQuestion() {
         
         // selecting a question form the suffled Array
-        let questionDictionary = shuffledQuestions[indexOfSelectedQuestion]
-        
+        let extractTheQuestion = gameManager.questionGenerator()
         // the Question of the round
-        questionField.text = questionDictionary.question
-        
-        
-
-       
+        questionField.text = extractTheQuestion.question
         
         // display 2 o 4 choices depnds the questions
         
-        if questionDictionary.choices.count == 2  {
+        if extractTheQuestion.choices.count == 2  {
         option3Button.isHidden = true
         option4Button.isHidden = true
         playAgainButton.isHidden = true
         checkingAnswerLable.isHidden = true
         nextQuestionButton.isHidden = true
-        option1Button.setTitle(questionDictionary.choices[0], for: .normal)
-        option2Button.setTitle(questionDictionary.choices[1], for: .normal)
-            option1Button.alpha = 1.0
-            option2Button.alpha = 1.0
-        
+        option1Button.setTitle(extractTheQuestion.choices[0], for: .normal)
+        option2Button.setTitle(extractTheQuestion.choices[1], for: .normal)
+            
+            buttonsAlpha(degree: 1.0)
             // Enable the BUTTON
-            option1Button.isEnabled = true
-            option2Button.isEnabled = true
+            enableButtons(status: true)
             
         } else {
         playAgainButton.isHidden = true
@@ -118,21 +114,15 @@ class ViewController: UIViewController {
         option4Button.isHidden = false
         checkingAnswerLable.isHidden = true
         nextQuestionButton.isHidden = true
-        option1Button.setTitle(questionDictionary.choices[0], for: .normal)
-        option2Button.setTitle(questionDictionary.choices[1], for: .normal)
-        option3Button.setTitle(questionDictionary.choices[2], for: .normal)
-        option4Button.setTitle(questionDictionary.choices[3], for: .normal)
+        option1Button.setTitle(extractTheQuestion.choices[0], for: .normal)
+        option2Button.setTitle(extractTheQuestion.choices[1], for: .normal)
+        option3Button.setTitle(extractTheQuestion.choices[2], for: .normal)
+        option4Button.setTitle(extractTheQuestion.choices[3], for: .normal)
         
-        option1Button.alpha = 1.0
-        option2Button.alpha = 1.0
-        option3Button.alpha = 1.0
-        option4Button.alpha = 1.0
+        buttonsAlpha(degree: 1.0)
         
         // Enable the BUTTONS
-            option1Button.isEnabled = true
-            option2Button.isEnabled = true
-            option3Button.isEnabled = true
-            option4Button.isEnabled = true
+          enableButtons(status: true)
             
             
         }
@@ -142,7 +132,7 @@ class ViewController: UIViewController {
     
     func displayScore() {
         
-        // hiding all BUTTONS + Checking Answe Lable
+        // hiding all BUTTONS + Checking Answer Lable
         hideOptionsButtons(status: true)
         checkingAnswerLable.isHidden = true
         
@@ -150,16 +140,16 @@ class ViewController: UIViewController {
         playAgainButton.isHidden = false
         
         // display the final result
-        if correctQuestions == questionsPerRound {
-            questionField.text = "Congrats!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
+        if gameManager.correctQuestions == gameManager.questionsPerRound {
+            questionField.text = "Congrats!\nYou got \(gameManager.correctQuestions) out of \(gameManager.questionsPerRound) correct!"
         } else {
-        questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
+            questionField.text = "Way to go!\nYou got \(gameManager.correctQuestions) out of \(gameManager.questionsPerRound) correct!"
         }
     }
     
     func nextRound() {
-        
-            if questionsAsked == questionsPerRound {
+            let gameOver = gameManager.gameIsOver()
+            if gameOver == true {
                 // Game is over
                 displayScore()
                 // dissapear the next question's BUTTON
@@ -190,52 +180,27 @@ class ViewController: UIViewController {
     
     @IBAction func checkAnswer(_ sender: UIButton) {
         // Increment the questions asked counter
+        let correctAnswer = gameManager.shuffledQuestions[gameManager.questionsAsked].answer
         
-        
-        let selectedQuestionDict = shuffledQuestions[indexOfSelectedQuestion]
-        let correctAnswer = selectedQuestionDict.answer
-        indexOfSelectedQuestion += 1
-        questionsAsked += 1
-        
-        if (sender === option1Button &&  correctAnswer == 0) || (sender === option2Button && correctAnswer == 1) || (sender === option3Button && correctAnswer == 2) || (sender === option4Button && correctAnswer == 3) {
-            correctQuestions += 1
-            
-            // display the Answer result if correct
-            checkingAnswerLable.isHidden = false
-            checkingAnswerLable.text = "Correct!"
-            checkingAnswerLable.textColor = #colorLiteral(red: 0, green: 0.5764705882, blue: 0.5294117647, alpha: 1)
-            
-            //
-            option1Button.alpha = 0.50
-            option2Button.alpha = 0.50
-            option3Button.alpha = 0.50
-            option4Button.alpha = 0.50
-            
-            // disable the BUTTONS
-            option1Button.isEnabled = false
-            option2Button.isEnabled = false
-            option3Button.isEnabled = false
-            option4Button.isEnabled = false
-            
-        } else {
-            
-            // display the Answer result if NOT correct
-            checkingAnswerLable.isHidden = false
-            checkingAnswerLable.text = "Sorry, wrong answer!"
-            checkingAnswerLable.textColor = #colorLiteral(red: 1, green: 0.6366160512, blue: 0.3839452267, alpha: 1)
-            option1Button.alpha = 0.50
-            option2Button.alpha = 0.50
-            option3Button.alpha = 0.50
-            option4Button.alpha = 0.50
-            
-            // disable Options BUTTONS
-            option1Button.isEnabled = false
-            option2Button.isEnabled = false
-            option3Button.isEnabled = false
-            option4Button.isEnabled = false
-    
+        switch sender {
+        case option1Button: checkingAnswerLable.text = gameManager.checkTheAnswer(selectedButton: 0)
+        case option2Button: checkingAnswerLable.text = gameManager.checkTheAnswer(selectedButton: 1)
+        case option3Button: checkingAnswerLable.text = gameManager.checkTheAnswer(selectedButton: 2)
+        case option4Button: checkingAnswerLable.text = gameManager.checkTheAnswer(selectedButton: 3)
+        default: break
         }
         
+        // text color for checking answer field
+        if (sender === option1Button && correctAnswer == 0) || (sender === option2Button && correctAnswer == 1) || (sender === option3Button && correctAnswer == 2) || (sender === option4Button && correctAnswer == 3) {
+            checkingAnswerLable.textColor = #colorLiteral(red: 0, green: 0.5764705882, blue: 0.5294117647, alpha: 1)
+        } else {
+            checkingAnswerLable.textColor = #colorLiteral(red: 1, green: 0.6366160512, blue: 0.3839452267, alpha: 1)
+        }
+        
+        
+        enableButtons(status: false)
+        buttonsAlpha(degree: 0.50)
+        checkingAnswerLable.isHidden = false
         // display the Next Question's BUTTON for the nextRound
         nextQuestionButton.isHidden = false
         
@@ -254,10 +219,7 @@ class ViewController: UIViewController {
         hideOptionsButtons(status: false)
         
         // Rest Value
-        shuffledQuestions = questions.shuffled()
-        questionsAsked = 0
-        indexOfSelectedQuestion = 0
-        correctQuestions = 0
+        gameManager.restValue()
         nextRound()
     }
     
