@@ -190,9 +190,11 @@ class ViewController: UIViewController {
         default: break
         }
         
+    
         // text color for checking answer field
         if (sender === option1Button && correctAnswer == 0) || (sender === option2Button && correctAnswer == 1) || (sender === option3Button && correctAnswer == 2) || (sender === option4Button && correctAnswer == 3) {
             checkingAnswerLable.textColor = #colorLiteral(red: 0, green: 0.5764705882, blue: 0.5294117647, alpha: 1)
+            
         } else {
             checkingAnswerLable.textColor = #colorLiteral(red: 1, green: 0.6366160512, blue: 0.3839452267, alpha: 1)
         }

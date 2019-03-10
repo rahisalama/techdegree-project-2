@@ -99,6 +99,7 @@ class GameManager {
         }
     }
     
+   
     // check if the game is over or not
     func gameIsOver() -> Bool {
          if questionsAsked == questionsPerRound {
